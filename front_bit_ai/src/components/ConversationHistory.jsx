@@ -48,7 +48,7 @@ export default function ConversationHistory({
                   }}
                   title="Supprimer"
                 >
-                  🗑️
+                  🗑️ 
                 </button>
               </div>
             ))
