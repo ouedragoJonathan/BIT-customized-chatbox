@@ -12,7 +12,7 @@ Interface React/Vite simple pour un chatbot personnalisé fournissant des inform
 Pour lancer le projet:
 
 Installer les dépendances
-npm install
+## npm install
 Lancer en mode développement
-npm run dev
+## npm run dev
 Couleurs: primaire #333333, secondaire #cd3167.
