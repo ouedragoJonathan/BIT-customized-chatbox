@@ -9,10 +9,6 @@ Creation d'un chatbox personnalise enfin de permettre a l'utilisateur de consult
 BIT Chatbot Frontend
 Interface React/Vite simple pour un chatbot personnalisé fournissant des informations sur le Burkina Institute of Technology (BIT).
 
-Pour lancer le projet:
 
-Installer les dépendances
-## npm install
-Lancer en mode développement
-## npm run dev
-Couleurs: primaire #333333, secondaire #cd3167.
+
+
