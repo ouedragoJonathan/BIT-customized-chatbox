@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Header from './components/Header'
 import ChatWindow from './components/ChatWindow'
 import WelcomePage from './components/WelcomePage'
+import ConversationHistory from './components/ConversationHistory'
 
 const initialUser = {
   name: 'Ali Coulibaly',
@@ -23,9 +24,24 @@ export default function App() {
   const [user] = useState(initialUser)
   const [messages, setMessages] = useState(initialMessages)
   const [isWelcome, setIsWelcome] = useState(true)
+  const [conversations, setConversations] = useState([])
+  const [currentConversationId, setCurrentConversationId] = useState(null)
+
+  // Charger l'historique depuis localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('conversations')
+    if (saved) {
+      setConversations(JSON.parse(saved))
+    }
+  }, [])
+
+  // Sauvegarder l'historique dans localStorage
+  useEffect(() => {
+    localStorage.setItem('conversations', JSON.stringify(conversations))
+  }, [conversations])
 
   function handleQuickQuestion(category) {
-    setIsWelcome(false)
+    startNewConversation()
     const userMsg = { id: Date.now(), sender: 'user', text: category }
     setMessages([userMsg])
     
@@ -37,6 +53,59 @@ export default function App() {
       }
       setMessages((m) => [...m, reply])
     }, 500)
+  }
+
+  function startNewConversation() {
+    const id = Date.now().toString()
+    setCurrentConversationId(id)
+    setIsWelcome(false)
+    setMessages([])
+  }
+
+  function saveConversation() {
+    if (messages.length > 0 && currentConversationId) {
+      const title = messages[0]?.text?.substring(0, 30) || 'Nouvelle conversation'
+      setConversations((prev) => {
+        const updated = [...prev]
+        const index = updated.findIndex((c) => c.id === currentConversationId)
+        if (index >= 0) {
+          updated[index] = {
+            id: currentConversationId,
+            title,
+            messages: JSON.parse(JSON.stringify(messages)),
+            timestamp: new Date().toLocaleString('fr-FR')
+          }
+        } else {
+          updated.push({
+            id: currentConversationId,
+            title,
+            messages: JSON.parse(JSON.stringify(messages)),
+            timestamp: new Date().toLocaleString('fr-FR')
+          })
+        }
+        return updated
+      })
+    }
+  }
+
+  function handleGoBack() {
+    saveConversation()
+    setIsWelcome(true)
+    setMessages([])
+    setCurrentConversationId(null)
+  }
+
+  function loadConversation(conversation) {
+    setCurrentConversationId(conversation.id)
+    setMessages(conversation.messages)
+    setIsWelcome(false)
+  }
+
+  function deleteConversation(id) {
+    setConversations((prev) => prev.filter((c) => c.id !== id))
+    if (currentConversationId === id) {
+      handleGoBack()
+    }
   }
 
   function handleSend(text) {
@@ -68,8 +137,25 @@ export default function App() {
   return (
     <div className="app-container">
       <Header />
-      {isWelcome && <WelcomePage user={user} onQuickQuestion={handleQuickQuestion} onSend={handleSend} />}
-      {!isWelcome && <ChatWindow user={user} messages={messages} onSend={handleSend} />}
+      <div className="app-main">
+        <ConversationHistory
+          conversations={conversations}
+          onLoadConversation={loadConversation}
+          onDeleteConversation={deleteConversation}
+          currentConversationId={currentConversationId}
+        />
+        <div className="app-content">
+          {isWelcome && <WelcomePage user={user} onQuickQuestion={handleQuickQuestion} onSend={handleSend} />}
+          {!isWelcome && (
+            <ChatWindow
+              user={user}
+              messages={messages}
+              onSend={handleSend}
+              onGoBack={handleGoBack}
+            />
+          )}
+        </div>
+      </div>
     </div>
   )
 }

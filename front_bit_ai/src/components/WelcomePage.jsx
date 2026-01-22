@@ -15,7 +15,9 @@ export default function WelcomePage({ user, onQuickQuestion, onSend }) {
 
   return (
     <div className="welcome-page">
-      <div className="welcome-icon">⭐</div>
+      <div className="welcome-icon">
+        <img src="/logo.png" alt="BIT Logo" className="welcome-logo-img" />
+      </div>
       <h1 className="welcome-title">Bienvenue sur BIT Assistant</h1>
       <p className="welcome-subtitle">
         Je suis votre assistant virtuel dédié au Burkina Institute of Technology. Posez-moi vos questions sur les programmes, les admissions, le campus et plus encore!

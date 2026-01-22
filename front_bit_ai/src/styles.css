@@ -20,6 +20,12 @@ body{
   flex-direction:column;
 }
 
+.app-main{
+  flex:1;
+  display:flex;
+  gap:0;
+}
+
 .app-header{
   background:var(--dark);
   color:white;
@@ -37,13 +43,20 @@ body{
 .header-logo{
   width:48px;
   height:48px;
-  background:linear-gradient(135deg,var(--secondary),#ff7aa2);
+  background:transparent;
   border-radius:10px;
   display:flex;
   align-items:center;
   justify-content:center;
   font-size:24px;
   font-weight:700;
+  overflow:hidden;
+}
+.logo-img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  padding:4px;
 }
 .header-title{
   display:flex;
@@ -80,13 +93,18 @@ body{
 .welcome-icon{
   width:96px;
   height:96px;
-  background:linear-gradient(135deg,var(--secondary),#ff7aa2);
+  background:transparent;
   border-radius:20px;
   display:flex;
   align-items:center;
   justify-content:center;
   font-size:48px;
   margin-bottom:24px;
+}
+.welcome-logo-img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
 }
 .welcome-title{
   font-size:32px;
@@ -160,6 +178,22 @@ body{
   display:flex;
   flex-direction:column;
   gap:4px;
+}
+.back-btn{
+  background:none;
+  border:none;
+  color:var(--secondary);
+  cursor:pointer;
+  font-weight:600;
+  font-size:14px;
+  padding:4px 8px;
+  border-radius:6px;
+  transition:all 0.2s ease;
+  margin-bottom:6px;
+  align-self:flex-start;
+}
+.back-btn:hover{
+  background:rgba(205,49,103,0.1);
 }
 .chat-header-left .title{
   font-weight:700;
@@ -269,4 +303,151 @@ body{
   .messages{padding:16px}
   .input-area{padding:12px 16px;gap:8px}
   .input{padding:12px 14px;font-size:14px}
+  .conversation-history{width:60px}
+  .conversation-history.collapsed .history-header{justify-content:center}
 }
+
+/* Historique des conversations */
+.app-content{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.conversation-history{
+  width:280px;
+  background:#f5f5f7;
+  border-right:1px solid #e5e5e5;
+  display:flex;
+  flex-direction:column;
+  transition:width 0.3s ease;
+  overflow:hidden;
+}
+
+.conversation-history.collapsed{
+  width:60px;
+}
+
+.history-header{
+  padding:16px 12px;
+  border-bottom:1px solid #e5e5e5;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.history-header h3{
+  margin:0;
+  font-size:14px;
+  font-weight:600;
+  color:var(--primary);
+  white-space:nowrap;
+}
+
+.toggle-btn{
+  background:none;
+  border:none;
+  cursor:pointer;
+  color:var(--muted);
+  font-size:16px;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:32px;
+  height:32px;
+  border-radius:6px;
+  transition:all 0.2s ease;
+}
+
+.toggle-btn:hover{
+  background:#e9e9ee;
+  color:var(--primary);
+}
+
+.history-list{
+  flex:1;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding:12px;
+}
+
+.empty-history{
+  color:#999;
+  font-size:13px;
+  text-align:center;
+  padding:20px 12px;
+  user-select:none;
+}
+
+.history-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px;
+  border-radius:8px;
+  background:white;
+  cursor:pointer;
+  border:1px solid #e9e9ee;
+  transition:all 0.2s ease;
+  min-width:0;
+}
+
+.history-item:hover{
+  background:#fef8fb;
+  border-color:var(--secondary);
+}
+
+.history-item.active{
+  background:#fff0f6;
+  border-color:var(--secondary);
+  font-weight:600;
+}
+
+.history-item-content{
+  flex:1;
+  min-width:0;
+  cursor:pointer;
+}
+
+.history-title{
+  font-size:13px;
+  font-weight:600;
+  color:var(--primary);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.history-time{
+  font-size:11px;
+  color:#999;
+  margin-top:4px;
+}
+
+.delete-btn{
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-size:16px;
+  padding:4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  transition:opacity 0.2s ease;
+  min-width:28px;
+  height:28px;
+}
+
+.history-item:hover .delete-btn{
+  opacity:1;
+}
+
+.delete-btn:hover{
+  transform:scale(1.2);
+}
+

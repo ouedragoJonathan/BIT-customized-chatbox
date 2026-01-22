@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import MessageInput from './MessageInput'
 import MessageBubble from './MessageBubble'
 
-export default function ChatWindow({ user, messages, onSend }) {
+export default function ChatWindow({ user, messages, onSend, onGoBack }) {
   const messagesEndRef = useRef(null)
 
   useEffect(() => {
@@ -13,6 +13,9 @@ export default function ChatWindow({ user, messages, onSend }) {
     <div className="main-chat">
       <div className="chat-header">
         <div className="chat-header-left">
+          <button className="back-btn" onClick={onGoBack} title="Retour">
+            ← Retour
+          </button>
           <div className="title">Chat — BIT Assistant</div>
           <div className="desc">Conversation personnalisée pour <strong>{user.name}</strong></div>
         </div>
