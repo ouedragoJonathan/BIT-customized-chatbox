@@ -3,6 +3,7 @@ import Header from './components/Header'
 import ChatWindow from './components/ChatWindow'
 import WelcomePage from './components/WelcomePage'
 import ConversationHistory from './components/ConversationHistory'
+import { sendMessageToBackend } from './services/api'
 
 const initialUser = {
   name: 'Ali Coulibaly',
@@ -40,19 +41,46 @@ export default function App() {
     localStorage.setItem('conversations', JSON.stringify(conversations))
   }, [conversations])
 
-  function handleQuickQuestion(category) {
+  async function handleQuickQuestion(category) {
     startNewConversation()
-    const userMsg = { id: Date.now(), sender: 'user', text: category }
+    const questionText = category
+    const userMsg = { id: Date.now(), sender: 'user', text: questionText }
     setMessages([userMsg])
     
-    setTimeout(() => {
-      const reply = {
-        id: Date.now() + 1,
-        sender: 'bot',
-        text: BIT_DATA[category.toLowerCase()] || BIT_DATA.contact
-      }
-      setMessages((m) => [...m, reply])
-    }, 500)
+    // Afficher un message de chargement
+    const loadingMsg = {
+      id: Date.now() + 1,
+      sender: 'bot',
+      text: '...',
+      isLoading: true
+    }
+    setMessages((m) => [...m, loadingMsg])
+
+    try {
+      // Envoyer la requête au backend
+      const response = await sendMessageToBackend(questionText, [])
+      
+      // Remplacer le message de chargement par la vraie réponse
+      setMessages((m) => {
+        const updated = m.filter(msg => !msg.isLoading)
+        return [...updated, {
+          id: Date.now() + 2,
+          sender: 'bot',
+          text: response
+        }]
+      })
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi du message:', error)
+      // Fallback sur les données locales en cas d'erreur
+      setMessages((m) => {
+        const updated = m.filter(msg => !msg.isLoading)
+        return [...updated, {
+          id: Date.now() + 2,
+          sender: 'bot',
+          text: BIT_DATA[category.toLowerCase()] || BIT_DATA.contact
+        }]
+      })
+    }
   }
 
   function startNewConversation() {
@@ -108,20 +136,54 @@ export default function App() {
     }
   }
 
-  function handleSend(text) {
+  async function handleSend(text) {
     if (!text) return
     setIsWelcome(false)
     const userMsg = { id: Date.now(), sender: 'user', text }
     setMessages((m) => [...m, userMsg])
 
-    setTimeout(() => {
-      const reply = {
-        id: Date.now() + 1,
-        sender: 'bot',
-        text: generateBotReply(text)
-      }
-      setMessages((m) => [...m, reply])
-    }, 800)
+    // Afficher un message de chargement
+    const loadingMsg = {
+      id: Date.now() + 1,
+      sender: 'bot',
+      text: '...',
+      isLoading: true
+    }
+    setMessages((m) => [...m, loadingMsg])
+
+    try {
+      // Préparer l'historique de conversation (sans le message de chargement)
+      const historyForBackend = messages
+        .filter(msg => msg.sender === 'user' || msg.sender === 'bot')
+        .map(msg => ({
+          role: msg.sender === 'user' ? 'user' : 'assistant',
+          content: msg.text
+        }))
+
+      // Envoyer la requête au backend
+      const response = await sendMessageToBackend(text, historyForBackend)
+      
+      // Remplacer le message de chargement par la vraie réponse
+      setMessages((m) => {
+        const updated = m.filter(msg => !msg.isLoading)
+        return [...updated, {
+          id: Date.now() + 2,
+          sender: 'bot',
+          text: response
+        }]
+      })
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi du message:', error)
+      // Remplacer le message de chargement par un message d'erreur
+      setMessages((m) => {
+        const updated = m.filter(msg => !msg.isLoading)
+        return [...updated, {
+          id: Date.now() + 2,
+          sender: 'bot',
+          text: `Désolé, une erreur s'est produite: ${error.message}. Veuillez réessayer.`
+        }]
+      })
+    }
   }
 
   function generateBotReply(query) {
